@@ -1,11 +1,12 @@
-import { useState } from 'react'
+
 import './App.css'
+import './Style.css'
 import Header from './components/Header';
 import TaskList from './components/TaskList';
 
-const App = () => {
+function  App(props) {
   return (
-    <div>
+    <div className='App'>
       <Header />
       <TaskList />
     </div>

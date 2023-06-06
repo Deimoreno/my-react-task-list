@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { GoTrashcan } from "react-icons/go";
-import { GoPencil } from "react-icons/go";
+import { GoTrashcan} from "react-icons/go";
+import { VscSave } from "react-icons/vsc";
+import { MdNoteAlt } from "react-icons/md";
+
 
 const Task = ({ task, completeTask, deleteTask, editTask }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,24 +24,26 @@ const Task = ({ task, completeTask, deleteTask, editTask }) => {
   };
 
   return (
-    <li>
+    <li className='tareas'>
       {isEditing ? (
         <>
           <input type="text" value={editedTitle} onChange={handleInputChange} />
-          <button onClick={handleSaveClick}>Save</button>
+          <button onClick={handleSaveClick}><VscSave /> </button>
         </>
       ) : (
         <>
-          <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-            {task.title}
-          </span>
           <input
             type="checkbox"
             checked={task.completed}
             onChange={() => completeTask(task.id)}
           />
+
+          <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
+            {task.title}
+          </span>
+         
           <button onClick={() => deleteTask(task.id)}><GoTrashcan /></button>
-          <button onClick={handleEditClick}>< GoPencil /></button>
+          <button onClick={handleEditClick}>< MdNoteAlt /></button>
         </>
       )}
     </li>
