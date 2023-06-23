@@ -1,53 +1,63 @@
 import React, { useState } from 'react';
-import { GoTrashcan} from "react-icons/go";
+import { GoTrashcan, GoX } from "react-icons/go";
 import { VscSave } from "react-icons/vsc";
 import { MdNoteAlt } from "react-icons/md";
 
 
-const Task = ({ task, completeTask, deleteTask, editTask }) => {
+function Task(props) {
+  // Destructuramos las props para obtener los valores necesarios
+  const { id, name, completed, onCheck, onDelete, onEdit } = props;
+  // Definimos los estados locales necesarios
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(task.title);
+  const [updatedName, setUpdatedName] = useState(name);
 
-  const handleInputChange = (event) => {
-    setEditedTitle(event.target.value);
-  };
+  // Función para actualizar el valor de updatedName cuando cambia el input de edición
+  function handleNameChange(e) {
+    setUpdatedName(e.target.value);
+  }
 
-  const handleEditClick = () => {
+  // Función para activar el modo edición
+  function handleEdit() {
     setIsEditing(true);
-  };
+  }
 
-  const handleSaveClick = () => {
-    if (editedTitle.trim() !== '') {
-      editTask(task.id, editedTitle);
-      setIsEditing(false);
-    }
-  };
+  // Función para cancelar la edición
+  function handleCancel() {
+    setIsEditing(false);
+    setUpdatedName(name);
+  }
+
+  // Función para guardar los cambios
+  function handleSave() {
+    onEdit(id, updatedName);
+    setIsEditing(false);
+  }
 
   return (
-    <li className='tareas'>
+    <div className="task">
+      {/* Checkbox para marcar la tarea como completada */}
+      <input
+        type="checkbox"
+        checked={completed}
+        onChange={(e) => onCheck(id, e.target.checked)}
+      />
+      {/* Si estamos en modo edición, mostramos el input y los botones de guardar y cancelar */}
       {isEditing ? (
         <>
-          <input type="text" value={editedTitle} onChange={handleInputChange} />
-          <button onClick={handleSaveClick}><VscSave /> </button>
+          <input type="text" value={updatedName} onChange={handleNameChange} />
+          <button onClick={handleSave}><VscSave /></button>
+          <button onClick={handleCancel}><GoX /></button>
         </>
       ) : (
+        // Si no estamos en modo edición, mostramos el nombre de la tarea y los botones de editar y borrar
         <>
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={() => completeTask(task.id)}
-          />
-
-          <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-            {task.title}
-          </span>
-         
-          <button onClick={() => deleteTask(task.id)}><GoTrashcan /></button>
-          <button onClick={handleEditClick}>< MdNoteAlt /></button>
+          <span className={completed ? "completed" : ""}>{name}</span>
+          <button onClick={handleEdit}>< MdNoteAlt /></button>
+          <button onClick={() => onDelete(id)}><GoTrashcan /></button>
         </>
       )}
-    </li>
+    </div>
   );
-};
+}
 
 export default Task;

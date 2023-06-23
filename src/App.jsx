@@ -1,6 +1,5 @@
 
 import './App.css'
-import './Style.css'
 import Header from './components/Header';
 import TaskList from './components/TaskList';
 
