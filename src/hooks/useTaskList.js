@@ -6,11 +6,12 @@ function useTaskList () {
         JSON.parse(localStorage.getItem("tasks")) || []
     );
 
-    function createTask(name) {
+    function createTask(name, description) {
          // Crea un objeto con los datos de la nueva tarea (nombre, id y estado de completado)
     const newTask = {
-        id: Date.now(), // El id se genera a partir del tiempo actual en milisegundos
+        id: Date.now(), 
         name,
+        description: description || "",
         completed: false,
       };
        // Agrega la nueva tarea al estado de la lista de tareas
