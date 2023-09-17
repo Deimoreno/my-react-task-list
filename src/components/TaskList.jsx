@@ -1,72 +1,76 @@
 import React, { useState } from 'react';
 import Task from './Task';
-import { GoDiffAdded } from "react-icons/go";
+import useTaskList from '../hooks/useTaskList';
+import { GrAddCircle } from "react-icons/gr";
 
-const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
 
-  const handleInputChange = (event) => {
-    setNewTask(event.target.value);
-  };
+function TaskList() {
+  // Se utiliza el hook useTaskList para obtener las tareas del estado global
+  const { tasks, createTask, deleteTask, updateTask } = useTaskList();
 
-  const addTask = () => {
-    if (newTask.trim() !== '') {
-      const task = {
-        id: Date.now(),
-        title: newTask,
-        completed: false,
-      };
+  // Estado local para el nombre de la nueva tarea
+  const [newTaskName, setNewTaskName] = useState("");
 
-      setTasks([...tasks, task]);
-      setNewTask('');
+  // Estado local para el id de la tarea a eliminar
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+
+  // Función para agregar una nueva tarea
+  function handleAddTask() {
+    if (newTaskName.length > 3) {
+      // Se crea la tarea con el nombre especificado
+      createTask(newTaskName, newTaskDescription);
+
+      // Se reinicia el estado local del nombre de la nueva tarea
+      setNewTaskName("");
+      // Se agregara una descipcion de la nueva tarea
+      setNewTaskDescription("");
+    }else {
+      alert('El nombre de la tarea debe tener más de 3 caracteres');
     }
-  };
+  }
 
-  const completeTask = (taskId) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, completed: !task.completed };
-      }
-      return task;
-    });
-
-    setTasks(updatedTasks);
-  };
-
-  const deleteTask = (taskId) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-  };
-
-  const editTask = (taskId, newTitle) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, title: newTitle };
-      }
-      return task;
-    });
-
-    setTasks(updatedTasks);
-  };
-
+  // Función para manejar la eliminación de una tarea
+  function handleDeleteTask(id) {
+    if (window.confirm('Está seguro que deseas eliminar esta tarea?')) {
+      deleteTask(id);
+    }
+  }
   return (
-    <div>
-      <input type="text" value={newTask} onChange={handleInputChange} />
-      <button onClick={addTask}>< GoDiffAdded /></button>
-      <ul>
-        {tasks.map((task) => (
-          <Task
-            key={task.id}
-            task={task}
-            completeTask={completeTask}
-            deleteTask={deleteTask}
-            editTask={editTask}
-          />
-        ))}
-      </ul>
+    <div className="task-list">
+      <div className="task-form">
+        <input
+          type="text"
+          value={newTaskName}
+          onChange={(e) => setNewTaskName(e.target.value)}
+          placeholder="Agregar tarea"
+          id="task-name-input"
+        />
+        <input
+          type="text"
+          value={newTaskDescription}
+          onChange={(e) => setNewTaskDescription(e.target.value)}
+          placeholder="Descripcion (Opcional)"
+          id="task-description-input"
+        />
+        <button onClick={handleAddTask}><GrAddCircle /></button>
+      </div>
+
+      {tasks.map((task) => (
+        <Task
+          key={task.id}
+          id={task.id}
+          name={task.name}
+          description={task.description}
+          completed={task.completed}
+          onCheck={(id, completed) => updateTask(id, { completed })}
+          onDelete={(id) => handleDeleteTask(id)}
+          onEdit={(id, name, description) =>
+            updateTask(id, { name, description })
+          }
+        />
+      ))}
     </div>
   );
-};
+}
 
 export default TaskList;

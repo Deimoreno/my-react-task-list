@@ -1,5 +1,9 @@
-const Header = () => {
-    return <h1>My React Task List</h1>;
-  };
+function Header(props) {
+    return (
+      <header>
+        <h1>Lista De Tares</h1>
+      </header>
+    );
+  }
   
   export default Header;
