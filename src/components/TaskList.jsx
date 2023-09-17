@@ -1,26 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Task from './Task';
-import { GoDiffAdded } from "react-icons/go";
+import { GrAddCircle } from "react-icons/gr";
 
-const TaskList = () => {
+function TaskList (props) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState('');
 
   const handleInputChange = (event) => {
     setNewTask(event.target.value);
-  };
+  }
+  useEffect(() => {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+    }
+  }, []);
 
+  
   const addTask = () => {
     if (newTask.trim() !== '') {
       const task = {
         id: Date.now(),
         title: newTask,
         completed: false,
+      
+        
       };
 
       setTasks([...tasks, task]);
       setNewTask('');
-    }
+       // Se agrega afuera del if 
+      localStorage.setItem('tasks', JSON.stringify(tasks))
+    } else {
+        alert('Por favor ingrese una tarea');
+      }
   };
 
   const completeTask = (taskId) => {
@@ -53,7 +66,7 @@ const TaskList = () => {
   return (
     <div>
       <input type="text" value={newTask} onChange={handleInputChange} />
-      <button onClick={addTask}>< GoDiffAdded /></button>
+      <button onClick={addTask}>< GrAddCircle /></button>
       <ul>
         {tasks.map((task) => (
           <Task
