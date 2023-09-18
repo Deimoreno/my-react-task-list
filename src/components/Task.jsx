@@ -1,49 +1,77 @@
-import React, { useState } from 'react';
-import { GoTrashcan } from "react-icons/go";
-import { GoPencil } from "react-icons/go";
+import React, { useState } from "react";
+import { Box, Checkbox, Flex, Input, IconButton } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
+import DeleteModal from "../modals/DeleteModal";
+import EditTaskModal from "../modals/EditTaskModal";
 
-const Task = ({ task, completeTask, deleteTask, editTask }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(task.title);
+function Task({ task, onUpdateTask, onDeleteTask }) {
+  const [editing] = useState(false);
+  const [editedName, setEditedName] = useState(task.name);
+  const [editedDescription, setEditedDescription] = useState(task.description);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleInputChange = (event) => {
-    setEditedTitle(event.target.value);
-  };
+  function handleCheck(completed) {
+    onUpdateTask(task.id, { completed });
+  }
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
+  function handleDelete() {
+    setShowDeleteModal(true);
+  }
 
-  const handleSaveClick = () => {
-    if (editedTitle.trim() !== '') {
-      editTask(task.id, editedTitle);
-      setIsEditing(false);
-    }
-  };
+  function confirmDelete() {
+    onDeleteTask(task.id);
+    setShowDeleteModal(false);
+  }
+
+  function cancelDelete() {
+    setShowDeleteModal(false);
+  }
 
   return (
-    <li>
-      {isEditing ? (
-        <>
-          <input type="text" value={editedTitle} onChange={handleInputChange} />
-          <button onClick={handleSaveClick}>Save</button>
-        </>
-      ) : (
-        <>
-          <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-            {task.title}
-          </span>
-          <input
-            type="checkbox"
-            checked={task.completed}
-            onChange={() => completeTask(task.id)}
+    <Box className="task">
+      {editing ? (
+        <Flex alignItems="center" justifyContent="flex-end">
+          <Input
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
           />
-          <button onClick={() => deleteTask(task.id)}><GoTrashcan /></button>
-          <button onClick={handleEditClick}>< GoPencil /></button>
-        </>
+          <Input
+            type="text"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+          />
+        </Flex>
+      ) : (
+        <Flex alignItems="center" justifyContent="space-between">
+          <Flex alignItems="center">
+            <Checkbox
+              isChecked={task.completed}
+              onChange={(e) => handleCheck(e.target.checked)}
+            />
+            <Box as="h4" marginLeft="2">
+              {task.name}
+            </Box>
+          </Flex>
+          <Flex alignItems="center">
+            <EditTaskModal task={task} onUpdateTask={onUpdateTask} />
+            <IconButton
+              aria-label="Delete Task"
+              colorScheme="red"
+              icon={<DeleteIcon />}
+              onClick={handleDelete}
+            />
+          </Flex>
+        </Flex>
       )}
-    </li>
+
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+      />
+    </Box>
   );
-};
+}
 
 export default Task;
