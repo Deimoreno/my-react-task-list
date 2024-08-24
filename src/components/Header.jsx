@@ -1,5 +1,12 @@
-const Header = () => {
-    return <h1>My React Task List</h1>;
-  };
-  
-  export default Header;
+import React from "react";
+import "../App.css";
+
+function Header(props) {
+  return (
+    <header>
+      <h1 className="header-container">List Of Task</h1>
+    </header>
+  );
+}
+
+export default Header;

@@ -1,49 +1,59 @@
-import React, { useState } from 'react';
-import { GoTrashcan } from "react-icons/go";
-import { GoPencil } from "react-icons/go";
+import React, { useState } from "react";
 
-const Task = ({ task, completeTask, deleteTask, editTask }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(task.title);
+function Task({ task, onUpdateTask, onDeleteTask }) {
+  const [editing, setEditing] = useState(false);
+  const [editedName, setEditedName] = useState(task.name);
+  const [editedDescription, setEditedDescription] = useState(task.description);
 
-  const handleInputChange = (event) => {
-    setEditedTitle(event.target.value);
-  };
+  function handleCheck(completed) {
+    onUpdateTask(task.id, { completed });
+  }
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
+  function handleEdit() {
+    setEditing(true);
+  }
 
-  const handleSaveClick = () => {
-    if (editedTitle.trim() !== '') {
-      editTask(task.id, editedTitle);
-      setIsEditing(false);
-    }
-  };
+  function handleSave() {
+    onUpdateTask(task.id, { name: editedName, description: editedDescription });
+    setEditing(false);
+  }
+
+  function handleDelete() {
+    onDeleteTask(task.id);
+  }
 
   return (
-    <li>
-      {isEditing ? (
+    <div className="task">
+      {editing ? (
         <>
-          <input type="text" value={editedTitle} onChange={handleInputChange} />
-          <button onClick={handleSaveClick}>Save</button>
+          <input
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            placeholder="Editar Tarea"
+          />
+          <input
+            type="text"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            placeholder="Editar Descripcion"
+          />
+          <button onClick={handleSave}> Save </button>
         </>
       ) : (
         <>
-          <span style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
-            {task.title}
-          </span>
           <input
             type="checkbox"
             checked={task.completed}
-            onChange={() => completeTask(task.id)}
+            onChange={(e) => handleCheck(e.target.checked)}
           />
-          <button onClick={() => deleteTask(task.id)}><GoTrashcan /></button>
-          <button onClick={handleEditClick}>< GoPencil /></button>
+          <h3>{task.name}</h3>
+          <button onClick={handleEdit}>Edit</button>
+          <button onClick={handleDelete}>Delete</button>
         </>
       )}
-    </li>
+    </div>
   );
-};
+}
 
 export default Task;

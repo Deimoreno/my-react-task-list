@@ -1,72 +1,62 @@
-import React, { useState } from 'react';
-import Task from './Task';
-import { GoDiffAdded } from "react-icons/go";
+import React, { useState } from "react";
+import Task from "./Task";
+import useTaskList from "../hooks/useTaskList";
 
-const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState('');
+function TaskList() {
+  const { tasks, createTask, deleteTask, updateTask } = useTaskList();
+  const [newTaskName, setNewTaskName] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
 
-  const handleInputChange = (event) => {
-    setNewTask(event.target.value);
-  };
-
-  const addTask = () => {
-    if (newTask.trim() !== '') {
-      const task = {
-        id: Date.now(),
-        title: newTask,
-        completed: false,
-      };
-
-      setTasks([...tasks, task]);
-      setNewTask('');
+  function handleAddTask() {
+    if (newTaskName.length > 3) {
+      createTask(newTaskName, newTaskDescription);
+      setNewTaskName("");
+      setNewTaskDescription("");
+    } else {
+      alert("Task name must have more than 3 characters.");
     }
-  };
+  }
 
-  const completeTask = (taskId) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, completed: !task.completed };
-      }
-      return task;
-    });
+  function handleDeleteTask(id) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      deleteTask(id);
+    }
+  }
 
-    setTasks(updatedTasks);
-  };
-
-  const deleteTask = (taskId) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-  };
-
-  const editTask = (taskId, newTitle) => {
-    const updatedTasks = tasks.map((task) => {
-      if (task.id === taskId) {
-        return { ...task, title: newTitle };
-      }
-      return task;
-    });
-
-    setTasks(updatedTasks);
-  };
+  function handleUpdateTask(id, updatedTask) {
+    updateTask(id, updatedTask);
+  }
 
   return (
-    <div>
-      <input type="text" value={newTask} onChange={handleInputChange} />
-      <button onClick={addTask}>< GoDiffAdded /></button>
-      <ul>
-        {tasks.map((task) => (
-          <Task
-            key={task.id}
-            task={task}
-            completeTask={completeTask}
-            deleteTask={deleteTask}
-            editTask={editTask}
-          />
-        ))}
-      </ul>
+    <div className="task-list">
+      <div className="task-form">
+        <input
+          type="text"
+          value={newTaskName}
+          onChange={(e) => setNewTaskName(e.target.value)}
+          placeholder="Task name*"
+          id="task-name-input"
+        />
+        <input
+          type="text"
+          value={newTaskDescription}
+          onChange={(e) => setNewTaskDescription(e.target.value)}
+          placeholder="Description (optional)"
+          id="task-description-input"
+        />
+        <button onClick={handleAddTask}>Add Task</button>
+      </div>
+
+      {tasks.map((task) => (
+        <Task
+          key={task.id}
+          task={task}
+          onUpdateTask={handleUpdateTask}
+          onDeleteTask={handleDeleteTask}
+        />
+      ))}
     </div>
   );
-};
+}
 
 export default TaskList;
